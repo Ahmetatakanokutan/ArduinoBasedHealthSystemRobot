@@ -16,6 +16,7 @@
 #define REPORTING_PERIOD_MS     1000
 #define analogPin  A1
 #define havaPin A3 
+#define buton6 10
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 PulseOximeter oxisensor; //oksijen sensörü tanımlama
@@ -94,6 +95,13 @@ void metin(){
    lcd.print("hava kalitesini");
    lcd.setCursor(0,1);
    lcd.print("icin 5. buton");
+   delay(1300);
+   lcd.clear();
+   lcd.home();
+   lcd.setCursor(0,0);
+   lcd.print("ekg olcmek");
+   lcd.setCursor(0,1);
+   lcd.print("icin 6. buton");
    
 }
 void setup()
@@ -215,14 +223,15 @@ delay(10000);
 if(digitalRead(buton3)==1){
   milisayac=millis();
 for(;millis() <(milisayac + 10000);){
-float isi= nemsensor.readHumidity();
+float nem= nemsensor.readHumidity();
 lcd.clear();
 lcd.setCursor(0,0);
 lcd.print("nem orani:");
 lcd.setCursor(10,0);
-lcd.println(isi);
+lcd.println(nem);
 lcd.setCursor(12,0);
 lcd.println("%  ");
+Serial.println(nem);
 delay(100);
 }
 metin();
@@ -241,7 +250,7 @@ for(;millis() <(milisayac + 10000);){
 lcd.println("hastanin atesi: ");
   lcd.setCursor(0,1);
   lcd.println(atessonuc); 
-
+  Serial.println(atessonuc);
   lcd.setCursor(2,1);
   lcd.println("c                ");
  
@@ -260,11 +269,33 @@ for(;millis() <(milisayac + 10000);){
   lcd.print("Hava kirliligi: "); 
   lcd.setCursor(0,1); 
   lcd.print(havakirliligi); 
+  Serial.println(havakirliligi);
   lcd.setCursor(4,1); 
   lcd.print("ppm");
   delay(200);
 }
 metin();
 }
+//////////////////////////ekg ayar yeri///////////////////////////////////////////
+if(digitalRead(buton6)==1){
+  lcd.clear();
+  lcd.print("olculuyor");
 
+  for(int a=0;a<1000;a++){
+  Serial.begin(9600);
+if((digitalRead(9)==1)||(digitalRead(8)==1)){
+Serial.println("NIL");
+}
+else{
+Serial.println(analogRead(A3));
+}
+
+Serial.end();
+delay(30);
+  }
+  lcd.clear();
+  lcd.print("olcum bitti");
+  delay(100);
+metin();
+}
 }
